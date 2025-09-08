@@ -1,0 +1,157 @@
+syntax = "proto3";
+
+package manager;
+option go_package = "instorage-manager/pkg/proto";
+
+import "google/protobuf/timestamp.proto";
+
+// Job status enumeration
+enum JobStatus {
+    JOB_STATUS_UNKNOWN = 0;
+    JOB_STATUS_PENDING = 1;
+    JOB_STATUS_RUNNING = 2;
+    JOB_STATUS_COMPLETED = 3;
+    JOB_STATUS_FAILED = 4;
+    JOB_STATUS_CANCELLED = 5;
+}
+
+// Resource requirements
+message ResourceRequirements {
+    string cpu = 1;
+    string memory = 2;
+}
+
+// Resource limits and requests
+message Resources {
+    ResourceRequirements requests = 1;
+    ResourceRequirements limits = 2;
+}
+
+// Preprocessing configuration
+message PreprocessingConfig {
+    int32 batch_size = 1;
+    int32 max_length = 2;
+    int32 n_samples = 3;
+    int32 parallel_workers = 4;
+    int32 chunk_size = 5;
+}
+
+// Data locations configuration
+message DataLocations {
+    repeated string locations = 1;
+    string strategy = 2;
+}
+
+// CSD configuration
+message CSDConfig {
+    bool enabled = 1;
+    string device_path = 2;
+}
+
+// Node scheduling configuration
+message NodeScheduling {
+    string node_name = 1;
+    map<string, string> node_selector = 2;
+}
+
+// Job configuration
+message JobConfig {
+    int32 parallelism = 1;
+    int32 completions = 2;
+    int32 backoff_limit = 3;
+    int32 ttl_seconds_after_finished = 4;
+}
+
+// Job submission request
+message SubmitJobRequest {
+    string job_id = 1;
+    string job_name = 2;
+    string namespace = 3;
+    string image = 4;
+    string image_pull_policy = 5;
+    string data_path = 6;
+    string output_path = 7;
+    string target_node = 8;
+    Resources resources = 9;
+    PreprocessingConfig preprocessing = 10;
+    DataLocations data_locations = 11;
+    CSDConfig csd = 12;
+    NodeScheduling node_scheduling = 13;
+    JobConfig job_config = 14;
+    map<string, string> labels = 15;
+    map<string, string> annotations = 16;
+}
+
+// Job submission response
+message SubmitJobResponse {
+    bool success = 1;
+    string message = 2;
+    string job_id = 3;
+    google.protobuf.Timestamp submitted_at = 4;
+}
+
+// Job status query request
+message GetJobStatusRequest {
+    string job_id = 1;
+}
+
+// Job status query response
+message GetJobStatusResponse {
+    string job_id = 1;
+    JobStatus status = 2;
+    string message = 3;
+    google.protobuf.Timestamp start_time = 4;
+    google.protobuf.Timestamp completion_time = 5;
+    string output_path = 6;
+    string error_message = 7;
+}
+
+// Job cancellation request
+message CancelJobRequest {
+    string job_id = 1;
+    string reason = 2;
+}
+
+// Job cancellation response
+message CancelJobResponse {
+    bool success = 1;
+    string message = 2;
+    google.protobuf.Timestamp cancelled_at = 3;
+}
+
+// Node resource information
+message NodeResources {
+    string node_name = 1;
+    string cpu_capacity = 2;
+    string memory_capacity = 3;
+    string cpu_available = 4;
+    string memory_available = 5;
+    int32 running_jobs = 6;
+    bool csd_enabled = 7;
+    string csd_status = 8;
+}
+
+// Node list request
+message ListNodesRequest {
+    bool csd_only = 1;
+}
+
+// Node list response
+message ListNodesResponse {
+    repeated NodeResources nodes = 1;
+}
+
+// Instorage Manager service definition
+service InstorageManager {
+    // Submit job
+    rpc SubmitJob(SubmitJobRequest) returns (SubmitJobResponse);
+    
+    // Get job status
+    rpc GetJobStatus(GetJobStatusRequest) returns (GetJobStatusResponse);
+    
+    // Cancel job
+    rpc CancelJob(CancelJobRequest) returns (CancelJobResponse);
+    
+    // List available nodes
+    rpc ListNodes(ListNodesRequest) returns (ListNodesResponse);
+}

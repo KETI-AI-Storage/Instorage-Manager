@@ -1,0 +1,78 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: instorage-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: instorage-manager
+  namespace: instorage-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: instorage-manager
+  namespace: management-controller
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: instorage-manager-crb
+subjects:
+- kind: ServiceAccount
+  name: instorage-manager
+  namespace: management-controller
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: instorage-manager
+  namespace: instorage-system
+  labels:
+    app: instorage-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: instorage-manager
+  template:
+    metadata:
+      labels:
+        app: instorage-manager
+    spec:
+      serviceAccountName: instorage-manager
+      containers:
+      - name: operator
+        image: ketidevit2/instorage-manager:v0.0.1 
+        imagePullPolicy: IfNotPresent
+        args:
+        - --health-probe-bind-address=:8081
+        - --zap-log-level=info
+        env:
+        - name: WATCH_NAMESPACE
+          value: ""  # 모든 네임스페이스 감시
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
