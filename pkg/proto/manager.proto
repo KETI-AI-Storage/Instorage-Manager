@@ -34,6 +34,47 @@ message PreprocessingConfig {
     int32 n_samples = 3;
     int32 parallel_workers = 4;
     int32 chunk_size = 5;
+    string batch_strategy = 6;
+    BatchExecution batch_execution = 7;
+    string chunking_strategy = 8;
+    DataDiscovery data_discovery = 9;
+    DynamicScaling dynamic_scaling = 10;
+    Optimization optimization = 11;
+}
+
+// Batch execution configuration
+message BatchExecution {
+    int32 max_batch_size = 1;
+    int32 max_parallel_jobs = 2;
+    int32 min_parallel_jobs = 3;
+    int32 target_batch_duration = 4;
+    int32 batch_timeout = 5;
+}
+
+// Data discovery configuration
+message DataDiscovery {
+    bool enabled = 1;
+    int32 sample_size = 2;
+    double sample_ratio = 3;
+    int32 max_scan_depth = 4;
+    repeated string file_extensions = 5;
+    repeated string exclude_patterns = 6;
+}
+
+// Dynamic scaling configuration
+message DynamicScaling {
+    bool enabled = 1;
+    double scale_up_threshold = 2;
+    double scale_down_threshold = 3;
+    int32 cooldown_period = 4;
+}
+
+// Performance optimization configuration
+message Optimization {
+    bool enable_caching = 1;
+    string cache_size = 2;
+    bool enable_compression = 3;
+    string io_optimization = 4;
 }
 
 // Data locations configuration
@@ -80,6 +121,36 @@ message SubmitJobRequest {
     JobConfig job_config = 14;
     map<string, string> labels = 15;
     map<string, string> annotations = 16;
+    BatchPlan batch_plan = 17;
+}
+
+// Batch plan for parallel processing
+message BatchPlan {
+    int32 total_batches = 1;
+    int32 max_parallel_jobs = 2;
+    repeated BatchInfo batches = 3;
+    string strategy = 4;
+    DataAnalysisResult data_analysis = 5;
+}
+
+// Individual batch information
+message BatchInfo {
+    string batch_id = 1;
+    repeated string file_paths = 2;
+    int64 estimated_size_bytes = 3;
+    map<string, string> batch_env = 4;
+    int32 item_count = 5;
+    string node_affinity = 6;
+}
+
+// Data analysis result
+message DataAnalysisResult {
+    int32 total_files = 1;
+    int64 total_size_bytes = 2;
+    int64 avg_file_size = 3;
+    map<string, int32> file_types = 4;
+    google.protobuf.Timestamp discovery_time = 5;
+    int32 sampled_files = 6;
 }
 
 // Job submission response
@@ -104,6 +175,29 @@ message GetJobStatusResponse {
     google.protobuf.Timestamp completion_time = 5;
     string output_path = 6;
     string error_message = 7;
+    BatchExecutionStatus batch_execution = 8;
+}
+
+// Batch execution status
+message BatchExecutionStatus {
+    int32 total_batches = 1;
+    int32 completed_batches = 2;
+    int32 failed_batches = 3;
+    int32 running_batches = 4;
+    repeated BatchStatus active_batches = 5;
+    string batch_strategy = 6;
+    int32 average_batch_duration = 7;
+    google.protobuf.Timestamp estimated_completion = 8;
+}
+
+// Individual batch status
+message BatchStatus {
+    string batch_id = 1;
+    string status = 2;
+    google.protobuf.Timestamp start_time = 3;
+    int32 item_count = 4;
+    int32 processed_items = 5;
+    string message = 6;
 }
 
 // Job cancellation request

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"net"
@@ -10,12 +9,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-logr/logr"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
-	"google.golang.org/grpc/reflection"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
@@ -24,16 +21,17 @@ import (
 )
 
 const (
-	DefaultGRPCPort    = "50051"
-	DefaultCSDEndpoint = "http://localhost:8080"
+	DefaultGRPCPort = "50051"
+)
+
+var (
+	setupLog = ctrl.Log.WithName("setup")
 )
 
 func main() {
 	var (
-		grpcPort         = flag.String("grpc-port", DefaultGRPCPort, "gRPC server port")
-		nodeName         = flag.String("node-name", "", "Node name this manager runs on")
-		csdEndpoint      = flag.String("csd-endpoint", DefaultCSDEndpoint, "CSD processor endpoint")
-		enableReflection = flag.Bool("enable-reflection", true, "Enable gRPC reflection")
+		grpcPort = flag.String("grpc-port", DefaultGRPCPort, "gRPC server port")
+		nodeName = flag.String("node-name", "", "Node name this manager runs on")
 	)
 
 	// Setup logging
@@ -46,32 +44,25 @@ func main() {
 	opts.BindFlags(flag.CommandLine)
 	flag.Parse()
 
-	logger := zap.New(zap.UseFlagOptions(&opts))
-	ctrl.SetLogger(logger)
+	ctrl.SetLogger(zap.New(zap.UseFlagOptions(&opts)))
 
 	// Get node name from environment if not provided
 	if *nodeName == "" {
 		*nodeName = os.Getenv("NODE_NAME")
 		if *nodeName == "" {
-			logger.Error(fmt.Errorf("node name not provided"),
+			setupLog.Error(fmt.Errorf("node name not provided"),
 				"node name must be set via --node-name flag or NODE_NAME env var")
 			os.Exit(1)
 		}
 	}
 
-	logger.Info("Starting Instorage Manager",
-		"nodeName", *nodeName,
-		"grpcPort", *grpcPort,
-		"csdEndpoint", *csdEndpoint,
-	)
+	setupLog.Info("Starting Instorage Manager", "nodeName", *nodeName, "grpcPort", *grpcPort)
 
 	// Create gRPC server
-	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(loggingInterceptor(logger)),
-	)
+	grpcServer := grpc.NewServer()
 
 	// Create and register our service
-	instorageServer := manager.NewInstorageManagerServer(logger, *nodeName, *csdEndpoint)
+	instorageServer := manager.NewInstorageManagerServer(ctrl.Log.WithName("manager"), *nodeName)
 	pb.RegisterInstorageManagerServer(grpcServer, instorageServer)
 
 	// Register health service
@@ -79,24 +70,18 @@ func main() {
 	grpc_health_v1.RegisterHealthServer(grpcServer, healthServer)
 	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_SERVING)
 
-	// Enable reflection for debugging
-	if *enableReflection {
-		reflection.Register(grpcServer)
-		logger.Info("gRPC reflection enabled")
-	}
-
 	// Listen on the specified port
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", *grpcPort))
 	if err != nil {
-		logger.Error(err, "Failed to listen on port", "port", *grpcPort)
+		setupLog.Error(err, "Failed to listen on port", "port", *grpcPort)
 		os.Exit(1)
 	}
 
 	// Start server in a goroutine
 	go func() {
-		logger.Info("Starting gRPC server", "address", lis.Addr().String())
+		setupLog.Info("Starting gRPC server", "address", lis.Addr().String())
 		if err := grpcServer.Serve(lis); err != nil {
-			logger.Error(err, "gRPC server failed")
+			setupLog.Error(err, "gRPC server failed")
 			os.Exit(1)
 		}
 	}()
@@ -107,40 +92,40 @@ func main() {
 
 	// Wait for shutdown signal
 	sig := <-sigChan
-	logger.Info("Received shutdown signal", "signal", sig.String())
+	setupLog.Info("Received shutdown signal", "signal", sig.String())
 
 	// Graceful shutdown
-	logger.Info("Shutting down gRPC server...")
+	setupLog.Info("Shutting down gRPC server...")
 	healthServer.SetServingStatus("", grpc_health_v1.HealthCheckResponse_NOT_SERVING)
 
 	// Stop accepting new connections and finish existing ones
 	grpcServer.GracefulStop()
 
-	logger.Info("Instorage Manager stopped")
+	setupLog.Info("Instorage Manager stopped")
 }
 
-// loggingInterceptor logs all gRPC calls
-func loggingInterceptor(logger logr.Logger) grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-		start := time.Now()
+// // loggingInterceptor logs all gRPC calls
+// func loggingInterceptor(logger logr.Logger) grpc.UnaryServerInterceptor {
+// 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+// 		start := time.Now()
 
-		// Call the handler
-		resp, err := handler(ctx, req)
+// 		// Call the handler
+// 		resp, err := handler(ctx, req)
 
-		duration := time.Since(start)
+// 		duration := time.Since(start)
 
-		if err != nil {
-			logger.Error(err, "gRPC call failed",
-				"method", info.FullMethod,
-				"duration", duration,
-			)
-		} else {
-			logger.V(1).Info("gRPC call completed",
-				"method", info.FullMethod,
-				"duration", duration,
-			)
-		}
+// 		if err != nil {
+// 			logger.Error(err, "gRPC call failed",
+// 				"method", info.FullMethod,
+// 				"duration", duration,
+// 			)
+// 		} else {
+// 			logger.V(1).Info("gRPC call completed",
+// 				"method", info.FullMethod,
+// 				"duration", duration,
+// 			)
+// 		}
 
-		return resp, err
-	}
-}
+// 		return resp, err
+// 	}
+// }

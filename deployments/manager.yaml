@@ -30,14 +30,13 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: instorage-manager
   namespace: instorage-system
   labels:
     app: instorage-manager
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: instorage-manager
@@ -47,32 +46,81 @@ spec:
         app: instorage-manager
     spec:
       serviceAccountName: instorage-manager
+      nodeSelector:
+        csd.enabled: "true"
       containers:
-      - name: operator
-        image: ketidevit2/instorage-manager:v0.0.1 
+      - name: manager
+        image: ketidevit2/instorage-manager:v0.0.1
         imagePullPolicy: IfNotPresent
         args:
-        - --health-probe-bind-address=:8081
+        - --grpc-port=50051
         - --zap-log-level=info
         env:
-        - name: WATCH_NAMESPACE
-          value: ""  # 모든 네임스페이스 감시
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: NODE_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        ports:
+        - name: grpc
+          containerPort: 50051
+          protocol: TCP
         resources:
           requests:
-            memory: "64Mi"
+            memory: "128Mi"
             cpu: "100m"
           limits:
-            memory: "256Mi"
-            cpu: "500m"
+            memory: "512Mi"
+            cpu: "1000m"
         livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 8081
-          initialDelaySeconds: 15
+          exec:
+            command:
+            - /bin/grpc_health_probe
+            - -addr=:50051
+          initialDelaySeconds: 30
           periodSeconds: 20
+          timeoutSeconds: 5
         readinessProbe:
-          httpGet:
-            path: /readyz
-            port: 8081
-          initialDelaySeconds: 5
+          exec:
+            command:
+            - /bin/grpc_health_probe
+            - -addr=:50051
+          initialDelaySeconds: 10
           periodSeconds: 10
+          timeoutSeconds: 5
+        volumeMounts:
+        - name: csd-socket
+          mountPath: /var/run/csd
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: instorage-manager
+  namespace: instorage-system
+  labels:
+    app: instorage-manager
+spec:
+  type: ClusterIP
+  clusterIP: None 
+  selector:
+    app: instorage-manager
+  ports:
+  - name: grpc
+    port: 50051
+    targetPort: 50051
+    protocol: TCP

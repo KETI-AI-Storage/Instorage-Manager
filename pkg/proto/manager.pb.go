@@ -189,14 +189,20 @@ func (x *Resources) GetLimits() *ResourceRequirements {
 
 // Preprocessing configuration
 type PreprocessingConfig struct {
-	state           protoimpl.MessageState `protogen:"open.v1"`
-	BatchSize       int32                  `protobuf:"varint,1,opt,name=batch_size,json=batchSize,proto3" json:"batch_size,omitempty"`
-	MaxLength       int32                  `protobuf:"varint,2,opt,name=max_length,json=maxLength,proto3" json:"max_length,omitempty"`
-	NSamples        int32                  `protobuf:"varint,3,opt,name=n_samples,json=nSamples,proto3" json:"n_samples,omitempty"`
-	ParallelWorkers int32                  `protobuf:"varint,4,opt,name=parallel_workers,json=parallelWorkers,proto3" json:"parallel_workers,omitempty"`
-	ChunkSize       int32                  `protobuf:"varint,5,opt,name=chunk_size,json=chunkSize,proto3" json:"chunk_size,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	BatchSize        int32                  `protobuf:"varint,1,opt,name=batch_size,json=batchSize,proto3" json:"batch_size,omitempty"`
+	MaxLength        int32                  `protobuf:"varint,2,opt,name=max_length,json=maxLength,proto3" json:"max_length,omitempty"`
+	NSamples         int32                  `protobuf:"varint,3,opt,name=n_samples,json=nSamples,proto3" json:"n_samples,omitempty"`
+	ParallelWorkers  int32                  `protobuf:"varint,4,opt,name=parallel_workers,json=parallelWorkers,proto3" json:"parallel_workers,omitempty"`
+	ChunkSize        int32                  `protobuf:"varint,5,opt,name=chunk_size,json=chunkSize,proto3" json:"chunk_size,omitempty"`
+	BatchStrategy    string                 `protobuf:"bytes,6,opt,name=batch_strategy,json=batchStrategy,proto3" json:"batch_strategy,omitempty"`
+	BatchExecution   *BatchExecution        `protobuf:"bytes,7,opt,name=batch_execution,json=batchExecution,proto3" json:"batch_execution,omitempty"`
+	ChunkingStrategy string                 `protobuf:"bytes,8,opt,name=chunking_strategy,json=chunkingStrategy,proto3" json:"chunking_strategy,omitempty"`
+	DataDiscovery    *DataDiscovery         `protobuf:"bytes,9,opt,name=data_discovery,json=dataDiscovery,proto3" json:"data_discovery,omitempty"`
+	DynamicScaling   *DynamicScaling        `protobuf:"bytes,10,opt,name=dynamic_scaling,json=dynamicScaling,proto3" json:"dynamic_scaling,omitempty"`
+	Optimization     *Optimization          `protobuf:"bytes,11,opt,name=optimization,proto3" json:"optimization,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *PreprocessingConfig) Reset() {
@@ -264,6 +270,348 @@ func (x *PreprocessingConfig) GetChunkSize() int32 {
 	return 0
 }
 
+func (x *PreprocessingConfig) GetBatchStrategy() string {
+	if x != nil {
+		return x.BatchStrategy
+	}
+	return ""
+}
+
+func (x *PreprocessingConfig) GetBatchExecution() *BatchExecution {
+	if x != nil {
+		return x.BatchExecution
+	}
+	return nil
+}
+
+func (x *PreprocessingConfig) GetChunkingStrategy() string {
+	if x != nil {
+		return x.ChunkingStrategy
+	}
+	return ""
+}
+
+func (x *PreprocessingConfig) GetDataDiscovery() *DataDiscovery {
+	if x != nil {
+		return x.DataDiscovery
+	}
+	return nil
+}
+
+func (x *PreprocessingConfig) GetDynamicScaling() *DynamicScaling {
+	if x != nil {
+		return x.DynamicScaling
+	}
+	return nil
+}
+
+func (x *PreprocessingConfig) GetOptimization() *Optimization {
+	if x != nil {
+		return x.Optimization
+	}
+	return nil
+}
+
+// Batch execution configuration
+type BatchExecution struct {
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	MaxBatchSize        int32                  `protobuf:"varint,1,opt,name=max_batch_size,json=maxBatchSize,proto3" json:"max_batch_size,omitempty"`
+	MaxParallelJobs     int32                  `protobuf:"varint,2,opt,name=max_parallel_jobs,json=maxParallelJobs,proto3" json:"max_parallel_jobs,omitempty"`
+	MinParallelJobs     int32                  `protobuf:"varint,3,opt,name=min_parallel_jobs,json=minParallelJobs,proto3" json:"min_parallel_jobs,omitempty"`
+	TargetBatchDuration int32                  `protobuf:"varint,4,opt,name=target_batch_duration,json=targetBatchDuration,proto3" json:"target_batch_duration,omitempty"`
+	BatchTimeout        int32                  `protobuf:"varint,5,opt,name=batch_timeout,json=batchTimeout,proto3" json:"batch_timeout,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *BatchExecution) Reset() {
+	*x = BatchExecution{}
+	mi := &file_manager_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchExecution) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchExecution) ProtoMessage() {}
+
+func (x *BatchExecution) ProtoReflect() protoreflect.Message {
+	mi := &file_manager_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchExecution.ProtoReflect.Descriptor instead.
+func (*BatchExecution) Descriptor() ([]byte, []int) {
+	return file_manager_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *BatchExecution) GetMaxBatchSize() int32 {
+	if x != nil {
+		return x.MaxBatchSize
+	}
+	return 0
+}
+
+func (x *BatchExecution) GetMaxParallelJobs() int32 {
+	if x != nil {
+		return x.MaxParallelJobs
+	}
+	return 0
+}
+
+func (x *BatchExecution) GetMinParallelJobs() int32 {
+	if x != nil {
+		return x.MinParallelJobs
+	}
+	return 0
+}
+
+func (x *BatchExecution) GetTargetBatchDuration() int32 {
+	if x != nil {
+		return x.TargetBatchDuration
+	}
+	return 0
+}
+
+func (x *BatchExecution) GetBatchTimeout() int32 {
+	if x != nil {
+		return x.BatchTimeout
+	}
+	return 0
+}
+
+// Data discovery configuration
+type DataDiscovery struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Enabled         bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	SampleSize      int32                  `protobuf:"varint,2,opt,name=sample_size,json=sampleSize,proto3" json:"sample_size,omitempty"`
+	SampleRatio     float64                `protobuf:"fixed64,3,opt,name=sample_ratio,json=sampleRatio,proto3" json:"sample_ratio,omitempty"`
+	MaxScanDepth    int32                  `protobuf:"varint,4,opt,name=max_scan_depth,json=maxScanDepth,proto3" json:"max_scan_depth,omitempty"`
+	FileExtensions  []string               `protobuf:"bytes,5,rep,name=file_extensions,json=fileExtensions,proto3" json:"file_extensions,omitempty"`
+	ExcludePatterns []string               `protobuf:"bytes,6,rep,name=exclude_patterns,json=excludePatterns,proto3" json:"exclude_patterns,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *DataDiscovery) Reset() {
+	*x = DataDiscovery{}
+	mi := &file_manager_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataDiscovery) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataDiscovery) ProtoMessage() {}
+
+func (x *DataDiscovery) ProtoReflect() protoreflect.Message {
+	mi := &file_manager_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataDiscovery.ProtoReflect.Descriptor instead.
+func (*DataDiscovery) Descriptor() ([]byte, []int) {
+	return file_manager_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *DataDiscovery) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *DataDiscovery) GetSampleSize() int32 {
+	if x != nil {
+		return x.SampleSize
+	}
+	return 0
+}
+
+func (x *DataDiscovery) GetSampleRatio() float64 {
+	if x != nil {
+		return x.SampleRatio
+	}
+	return 0
+}
+
+func (x *DataDiscovery) GetMaxScanDepth() int32 {
+	if x != nil {
+		return x.MaxScanDepth
+	}
+	return 0
+}
+
+func (x *DataDiscovery) GetFileExtensions() []string {
+	if x != nil {
+		return x.FileExtensions
+	}
+	return nil
+}
+
+func (x *DataDiscovery) GetExcludePatterns() []string {
+	if x != nil {
+		return x.ExcludePatterns
+	}
+	return nil
+}
+
+// Dynamic scaling configuration
+type DynamicScaling struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Enabled            bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
+	ScaleUpThreshold   float64                `protobuf:"fixed64,2,opt,name=scale_up_threshold,json=scaleUpThreshold,proto3" json:"scale_up_threshold,omitempty"`
+	ScaleDownThreshold float64                `protobuf:"fixed64,3,opt,name=scale_down_threshold,json=scaleDownThreshold,proto3" json:"scale_down_threshold,omitempty"`
+	CooldownPeriod     int32                  `protobuf:"varint,4,opt,name=cooldown_period,json=cooldownPeriod,proto3" json:"cooldown_period,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *DynamicScaling) Reset() {
+	*x = DynamicScaling{}
+	mi := &file_manager_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DynamicScaling) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DynamicScaling) ProtoMessage() {}
+
+func (x *DynamicScaling) ProtoReflect() protoreflect.Message {
+	mi := &file_manager_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DynamicScaling.ProtoReflect.Descriptor instead.
+func (*DynamicScaling) Descriptor() ([]byte, []int) {
+	return file_manager_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *DynamicScaling) GetEnabled() bool {
+	if x != nil {
+		return x.Enabled
+	}
+	return false
+}
+
+func (x *DynamicScaling) GetScaleUpThreshold() float64 {
+	if x != nil {
+		return x.ScaleUpThreshold
+	}
+	return 0
+}
+
+func (x *DynamicScaling) GetScaleDownThreshold() float64 {
+	if x != nil {
+		return x.ScaleDownThreshold
+	}
+	return 0
+}
+
+func (x *DynamicScaling) GetCooldownPeriod() int32 {
+	if x != nil {
+		return x.CooldownPeriod
+	}
+	return 0
+}
+
+// Performance optimization configuration
+type Optimization struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	EnableCaching     bool                   `protobuf:"varint,1,opt,name=enable_caching,json=enableCaching,proto3" json:"enable_caching,omitempty"`
+	CacheSize         string                 `protobuf:"bytes,2,opt,name=cache_size,json=cacheSize,proto3" json:"cache_size,omitempty"`
+	EnableCompression bool                   `protobuf:"varint,3,opt,name=enable_compression,json=enableCompression,proto3" json:"enable_compression,omitempty"`
+	IoOptimization    string                 `protobuf:"bytes,4,opt,name=io_optimization,json=ioOptimization,proto3" json:"io_optimization,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *Optimization) Reset() {
+	*x = Optimization{}
+	mi := &file_manager_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Optimization) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Optimization) ProtoMessage() {}
+
+func (x *Optimization) ProtoReflect() protoreflect.Message {
+	mi := &file_manager_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Optimization.ProtoReflect.Descriptor instead.
+func (*Optimization) Descriptor() ([]byte, []int) {
+	return file_manager_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *Optimization) GetEnableCaching() bool {
+	if x != nil {
+		return x.EnableCaching
+	}
+	return false
+}
+
+func (x *Optimization) GetCacheSize() string {
+	if x != nil {
+		return x.CacheSize
+	}
+	return ""
+}
+
+func (x *Optimization) GetEnableCompression() bool {
+	if x != nil {
+		return x.EnableCompression
+	}
+	return false
+}
+
+func (x *Optimization) GetIoOptimization() string {
+	if x != nil {
+		return x.IoOptimization
+	}
+	return ""
+}
+
 // Data locations configuration
 type DataLocations struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -275,7 +623,7 @@ type DataLocations struct {
 
 func (x *DataLocations) Reset() {
 	*x = DataLocations{}
-	mi := &file_manager_proto_msgTypes[3]
+	mi := &file_manager_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -287,7 +635,7 @@ func (x *DataLocations) String() string {
 func (*DataLocations) ProtoMessage() {}
 
 func (x *DataLocations) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[3]
+	mi := &file_manager_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -300,7 +648,7 @@ func (x *DataLocations) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataLocations.ProtoReflect.Descriptor instead.
 func (*DataLocations) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{3}
+	return file_manager_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DataLocations) GetLocations() []string {
@@ -328,7 +676,7 @@ type CSDConfig struct {
 
 func (x *CSDConfig) Reset() {
 	*x = CSDConfig{}
-	mi := &file_manager_proto_msgTypes[4]
+	mi := &file_manager_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -340,7 +688,7 @@ func (x *CSDConfig) String() string {
 func (*CSDConfig) ProtoMessage() {}
 
 func (x *CSDConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[4]
+	mi := &file_manager_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -353,7 +701,7 @@ func (x *CSDConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CSDConfig.ProtoReflect.Descriptor instead.
 func (*CSDConfig) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{4}
+	return file_manager_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CSDConfig) GetEnabled() bool {
@@ -381,7 +729,7 @@ type NodeScheduling struct {
 
 func (x *NodeScheduling) Reset() {
 	*x = NodeScheduling{}
-	mi := &file_manager_proto_msgTypes[5]
+	mi := &file_manager_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -393,7 +741,7 @@ func (x *NodeScheduling) String() string {
 func (*NodeScheduling) ProtoMessage() {}
 
 func (x *NodeScheduling) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[5]
+	mi := &file_manager_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -406,7 +754,7 @@ func (x *NodeScheduling) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeScheduling.ProtoReflect.Descriptor instead.
 func (*NodeScheduling) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{5}
+	return file_manager_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *NodeScheduling) GetNodeName() string {
@@ -436,7 +784,7 @@ type JobConfig struct {
 
 func (x *JobConfig) Reset() {
 	*x = JobConfig{}
-	mi := &file_manager_proto_msgTypes[6]
+	mi := &file_manager_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -448,7 +796,7 @@ func (x *JobConfig) String() string {
 func (*JobConfig) ProtoMessage() {}
 
 func (x *JobConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[6]
+	mi := &file_manager_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -461,7 +809,7 @@ func (x *JobConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use JobConfig.ProtoReflect.Descriptor instead.
 func (*JobConfig) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{6}
+	return file_manager_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *JobConfig) GetParallelism() int32 {
@@ -511,13 +859,14 @@ type SubmitJobRequest struct {
 	JobConfig       *JobConfig             `protobuf:"bytes,14,opt,name=job_config,json=jobConfig,proto3" json:"job_config,omitempty"`
 	Labels          map[string]string      `protobuf:"bytes,15,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	Annotations     map[string]string      `protobuf:"bytes,16,rep,name=annotations,proto3" json:"annotations,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	BatchPlan       *BatchPlan             `protobuf:"bytes,17,opt,name=batch_plan,json=batchPlan,proto3" json:"batch_plan,omitempty"`
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
 
 func (x *SubmitJobRequest) Reset() {
 	*x = SubmitJobRequest{}
-	mi := &file_manager_proto_msgTypes[7]
+	mi := &file_manager_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -529,7 +878,7 @@ func (x *SubmitJobRequest) String() string {
 func (*SubmitJobRequest) ProtoMessage() {}
 
 func (x *SubmitJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[7]
+	mi := &file_manager_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -542,7 +891,7 @@ func (x *SubmitJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitJobRequest.ProtoReflect.Descriptor instead.
 func (*SubmitJobRequest) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{7}
+	return file_manager_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SubmitJobRequest) GetJobId() string {
@@ -657,6 +1006,260 @@ func (x *SubmitJobRequest) GetAnnotations() map[string]string {
 	return nil
 }
 
+func (x *SubmitJobRequest) GetBatchPlan() *BatchPlan {
+	if x != nil {
+		return x.BatchPlan
+	}
+	return nil
+}
+
+// Batch plan for parallel processing
+type BatchPlan struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	TotalBatches    int32                  `protobuf:"varint,1,opt,name=total_batches,json=totalBatches,proto3" json:"total_batches,omitempty"`
+	MaxParallelJobs int32                  `protobuf:"varint,2,opt,name=max_parallel_jobs,json=maxParallelJobs,proto3" json:"max_parallel_jobs,omitempty"`
+	Batches         []*BatchInfo           `protobuf:"bytes,3,rep,name=batches,proto3" json:"batches,omitempty"`
+	Strategy        string                 `protobuf:"bytes,4,opt,name=strategy,proto3" json:"strategy,omitempty"`
+	DataAnalysis    *DataAnalysisResult    `protobuf:"bytes,5,opt,name=data_analysis,json=dataAnalysis,proto3" json:"data_analysis,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *BatchPlan) Reset() {
+	*x = BatchPlan{}
+	mi := &file_manager_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchPlan) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchPlan) ProtoMessage() {}
+
+func (x *BatchPlan) ProtoReflect() protoreflect.Message {
+	mi := &file_manager_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchPlan.ProtoReflect.Descriptor instead.
+func (*BatchPlan) Descriptor() ([]byte, []int) {
+	return file_manager_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *BatchPlan) GetTotalBatches() int32 {
+	if x != nil {
+		return x.TotalBatches
+	}
+	return 0
+}
+
+func (x *BatchPlan) GetMaxParallelJobs() int32 {
+	if x != nil {
+		return x.MaxParallelJobs
+	}
+	return 0
+}
+
+func (x *BatchPlan) GetBatches() []*BatchInfo {
+	if x != nil {
+		return x.Batches
+	}
+	return nil
+}
+
+func (x *BatchPlan) GetStrategy() string {
+	if x != nil {
+		return x.Strategy
+	}
+	return ""
+}
+
+func (x *BatchPlan) GetDataAnalysis() *DataAnalysisResult {
+	if x != nil {
+		return x.DataAnalysis
+	}
+	return nil
+}
+
+// Individual batch information
+type BatchInfo struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	BatchId            string                 `protobuf:"bytes,1,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
+	FilePaths          []string               `protobuf:"bytes,2,rep,name=file_paths,json=filePaths,proto3" json:"file_paths,omitempty"`
+	EstimatedSizeBytes int64                  `protobuf:"varint,3,opt,name=estimated_size_bytes,json=estimatedSizeBytes,proto3" json:"estimated_size_bytes,omitempty"`
+	BatchEnv           map[string]string      `protobuf:"bytes,4,rep,name=batch_env,json=batchEnv,proto3" json:"batch_env,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	ItemCount          int32                  `protobuf:"varint,5,opt,name=item_count,json=itemCount,proto3" json:"item_count,omitempty"`
+	NodeAffinity       string                 `protobuf:"bytes,6,opt,name=node_affinity,json=nodeAffinity,proto3" json:"node_affinity,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *BatchInfo) Reset() {
+	*x = BatchInfo{}
+	mi := &file_manager_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchInfo) ProtoMessage() {}
+
+func (x *BatchInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_manager_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchInfo.ProtoReflect.Descriptor instead.
+func (*BatchInfo) Descriptor() ([]byte, []int) {
+	return file_manager_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *BatchInfo) GetBatchId() string {
+	if x != nil {
+		return x.BatchId
+	}
+	return ""
+}
+
+func (x *BatchInfo) GetFilePaths() []string {
+	if x != nil {
+		return x.FilePaths
+	}
+	return nil
+}
+
+func (x *BatchInfo) GetEstimatedSizeBytes() int64 {
+	if x != nil {
+		return x.EstimatedSizeBytes
+	}
+	return 0
+}
+
+func (x *BatchInfo) GetBatchEnv() map[string]string {
+	if x != nil {
+		return x.BatchEnv
+	}
+	return nil
+}
+
+func (x *BatchInfo) GetItemCount() int32 {
+	if x != nil {
+		return x.ItemCount
+	}
+	return 0
+}
+
+func (x *BatchInfo) GetNodeAffinity() string {
+	if x != nil {
+		return x.NodeAffinity
+	}
+	return ""
+}
+
+// Data analysis result
+type DataAnalysisResult struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	TotalFiles     int32                  `protobuf:"varint,1,opt,name=total_files,json=totalFiles,proto3" json:"total_files,omitempty"`
+	TotalSizeBytes int64                  `protobuf:"varint,2,opt,name=total_size_bytes,json=totalSizeBytes,proto3" json:"total_size_bytes,omitempty"`
+	AvgFileSize    int64                  `protobuf:"varint,3,opt,name=avg_file_size,json=avgFileSize,proto3" json:"avg_file_size,omitempty"`
+	FileTypes      map[string]int32       `protobuf:"bytes,4,rep,name=file_types,json=fileTypes,proto3" json:"file_types,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	DiscoveryTime  *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=discovery_time,json=discoveryTime,proto3" json:"discovery_time,omitempty"`
+	SampledFiles   int32                  `protobuf:"varint,6,opt,name=sampled_files,json=sampledFiles,proto3" json:"sampled_files,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *DataAnalysisResult) Reset() {
+	*x = DataAnalysisResult{}
+	mi := &file_manager_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DataAnalysisResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DataAnalysisResult) ProtoMessage() {}
+
+func (x *DataAnalysisResult) ProtoReflect() protoreflect.Message {
+	mi := &file_manager_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DataAnalysisResult.ProtoReflect.Descriptor instead.
+func (*DataAnalysisResult) Descriptor() ([]byte, []int) {
+	return file_manager_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *DataAnalysisResult) GetTotalFiles() int32 {
+	if x != nil {
+		return x.TotalFiles
+	}
+	return 0
+}
+
+func (x *DataAnalysisResult) GetTotalSizeBytes() int64 {
+	if x != nil {
+		return x.TotalSizeBytes
+	}
+	return 0
+}
+
+func (x *DataAnalysisResult) GetAvgFileSize() int64 {
+	if x != nil {
+		return x.AvgFileSize
+	}
+	return 0
+}
+
+func (x *DataAnalysisResult) GetFileTypes() map[string]int32 {
+	if x != nil {
+		return x.FileTypes
+	}
+	return nil
+}
+
+func (x *DataAnalysisResult) GetDiscoveryTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.DiscoveryTime
+	}
+	return nil
+}
+
+func (x *DataAnalysisResult) GetSampledFiles() int32 {
+	if x != nil {
+		return x.SampledFiles
+	}
+	return 0
+}
+
 // Job submission response
 type SubmitJobResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -670,7 +1273,7 @@ type SubmitJobResponse struct {
 
 func (x *SubmitJobResponse) Reset() {
 	*x = SubmitJobResponse{}
-	mi := &file_manager_proto_msgTypes[8]
+	mi := &file_manager_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -682,7 +1285,7 @@ func (x *SubmitJobResponse) String() string {
 func (*SubmitJobResponse) ProtoMessage() {}
 
 func (x *SubmitJobResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[8]
+	mi := &file_manager_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -695,7 +1298,7 @@ func (x *SubmitJobResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubmitJobResponse.ProtoReflect.Descriptor instead.
 func (*SubmitJobResponse) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{8}
+	return file_manager_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *SubmitJobResponse) GetSuccess() bool {
@@ -736,7 +1339,7 @@ type GetJobStatusRequest struct {
 
 func (x *GetJobStatusRequest) Reset() {
 	*x = GetJobStatusRequest{}
-	mi := &file_manager_proto_msgTypes[9]
+	mi := &file_manager_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -748,7 +1351,7 @@ func (x *GetJobStatusRequest) String() string {
 func (*GetJobStatusRequest) ProtoMessage() {}
 
 func (x *GetJobStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[9]
+	mi := &file_manager_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -761,7 +1364,7 @@ func (x *GetJobStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetJobStatusRequest.ProtoReflect.Descriptor instead.
 func (*GetJobStatusRequest) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{9}
+	return file_manager_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetJobStatusRequest) GetJobId() string {
@@ -781,13 +1384,14 @@ type GetJobStatusResponse struct {
 	CompletionTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=completion_time,json=completionTime,proto3" json:"completion_time,omitempty"`
 	OutputPath     string                 `protobuf:"bytes,6,opt,name=output_path,json=outputPath,proto3" json:"output_path,omitempty"`
 	ErrorMessage   string                 `protobuf:"bytes,7,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	BatchExecution *BatchExecutionStatus  `protobuf:"bytes,8,opt,name=batch_execution,json=batchExecution,proto3" json:"batch_execution,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
 
 func (x *GetJobStatusResponse) Reset() {
 	*x = GetJobStatusResponse{}
-	mi := &file_manager_proto_msgTypes[10]
+	mi := &file_manager_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -799,7 +1403,7 @@ func (x *GetJobStatusResponse) String() string {
 func (*GetJobStatusResponse) ProtoMessage() {}
 
 func (x *GetJobStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[10]
+	mi := &file_manager_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -812,7 +1416,7 @@ func (x *GetJobStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetJobStatusResponse.ProtoReflect.Descriptor instead.
 func (*GetJobStatusResponse) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{10}
+	return file_manager_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *GetJobStatusResponse) GetJobId() string {
@@ -864,6 +1468,199 @@ func (x *GetJobStatusResponse) GetErrorMessage() string {
 	return ""
 }
 
+func (x *GetJobStatusResponse) GetBatchExecution() *BatchExecutionStatus {
+	if x != nil {
+		return x.BatchExecution
+	}
+	return nil
+}
+
+// Batch execution status
+type BatchExecutionStatus struct {
+	state                protoimpl.MessageState `protogen:"open.v1"`
+	TotalBatches         int32                  `protobuf:"varint,1,opt,name=total_batches,json=totalBatches,proto3" json:"total_batches,omitempty"`
+	CompletedBatches     int32                  `protobuf:"varint,2,opt,name=completed_batches,json=completedBatches,proto3" json:"completed_batches,omitempty"`
+	FailedBatches        int32                  `protobuf:"varint,3,opt,name=failed_batches,json=failedBatches,proto3" json:"failed_batches,omitempty"`
+	RunningBatches       int32                  `protobuf:"varint,4,opt,name=running_batches,json=runningBatches,proto3" json:"running_batches,omitempty"`
+	ActiveBatches        []*BatchStatus         `protobuf:"bytes,5,rep,name=active_batches,json=activeBatches,proto3" json:"active_batches,omitempty"`
+	BatchStrategy        string                 `protobuf:"bytes,6,opt,name=batch_strategy,json=batchStrategy,proto3" json:"batch_strategy,omitempty"`
+	AverageBatchDuration int32                  `protobuf:"varint,7,opt,name=average_batch_duration,json=averageBatchDuration,proto3" json:"average_batch_duration,omitempty"`
+	EstimatedCompletion  *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=estimated_completion,json=estimatedCompletion,proto3" json:"estimated_completion,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *BatchExecutionStatus) Reset() {
+	*x = BatchExecutionStatus{}
+	mi := &file_manager_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchExecutionStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchExecutionStatus) ProtoMessage() {}
+
+func (x *BatchExecutionStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_manager_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchExecutionStatus.ProtoReflect.Descriptor instead.
+func (*BatchExecutionStatus) Descriptor() ([]byte, []int) {
+	return file_manager_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *BatchExecutionStatus) GetTotalBatches() int32 {
+	if x != nil {
+		return x.TotalBatches
+	}
+	return 0
+}
+
+func (x *BatchExecutionStatus) GetCompletedBatches() int32 {
+	if x != nil {
+		return x.CompletedBatches
+	}
+	return 0
+}
+
+func (x *BatchExecutionStatus) GetFailedBatches() int32 {
+	if x != nil {
+		return x.FailedBatches
+	}
+	return 0
+}
+
+func (x *BatchExecutionStatus) GetRunningBatches() int32 {
+	if x != nil {
+		return x.RunningBatches
+	}
+	return 0
+}
+
+func (x *BatchExecutionStatus) GetActiveBatches() []*BatchStatus {
+	if x != nil {
+		return x.ActiveBatches
+	}
+	return nil
+}
+
+func (x *BatchExecutionStatus) GetBatchStrategy() string {
+	if x != nil {
+		return x.BatchStrategy
+	}
+	return ""
+}
+
+func (x *BatchExecutionStatus) GetAverageBatchDuration() int32 {
+	if x != nil {
+		return x.AverageBatchDuration
+	}
+	return 0
+}
+
+func (x *BatchExecutionStatus) GetEstimatedCompletion() *timestamppb.Timestamp {
+	if x != nil {
+		return x.EstimatedCompletion
+	}
+	return nil
+}
+
+// Individual batch status
+type BatchStatus struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	BatchId        string                 `protobuf:"bytes,1,opt,name=batch_id,json=batchId,proto3" json:"batch_id,omitempty"`
+	Status         string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	StartTime      *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	ItemCount      int32                  `protobuf:"varint,4,opt,name=item_count,json=itemCount,proto3" json:"item_count,omitempty"`
+	ProcessedItems int32                  `protobuf:"varint,5,opt,name=processed_items,json=processedItems,proto3" json:"processed_items,omitempty"`
+	Message        string                 `protobuf:"bytes,6,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *BatchStatus) Reset() {
+	*x = BatchStatus{}
+	mi := &file_manager_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BatchStatus) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BatchStatus) ProtoMessage() {}
+
+func (x *BatchStatus) ProtoReflect() protoreflect.Message {
+	mi := &file_manager_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BatchStatus.ProtoReflect.Descriptor instead.
+func (*BatchStatus) Descriptor() ([]byte, []int) {
+	return file_manager_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *BatchStatus) GetBatchId() string {
+	if x != nil {
+		return x.BatchId
+	}
+	return ""
+}
+
+func (x *BatchStatus) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *BatchStatus) GetStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartTime
+	}
+	return nil
+}
+
+func (x *BatchStatus) GetItemCount() int32 {
+	if x != nil {
+		return x.ItemCount
+	}
+	return 0
+}
+
+func (x *BatchStatus) GetProcessedItems() int32 {
+	if x != nil {
+		return x.ProcessedItems
+	}
+	return 0
+}
+
+func (x *BatchStatus) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 // Job cancellation request
 type CancelJobRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -875,7 +1672,7 @@ type CancelJobRequest struct {
 
 func (x *CancelJobRequest) Reset() {
 	*x = CancelJobRequest{}
-	mi := &file_manager_proto_msgTypes[11]
+	mi := &file_manager_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -887,7 +1684,7 @@ func (x *CancelJobRequest) String() string {
 func (*CancelJobRequest) ProtoMessage() {}
 
 func (x *CancelJobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[11]
+	mi := &file_manager_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -900,7 +1697,7 @@ func (x *CancelJobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelJobRequest.ProtoReflect.Descriptor instead.
 func (*CancelJobRequest) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{11}
+	return file_manager_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *CancelJobRequest) GetJobId() string {
@@ -929,7 +1726,7 @@ type CancelJobResponse struct {
 
 func (x *CancelJobResponse) Reset() {
 	*x = CancelJobResponse{}
-	mi := &file_manager_proto_msgTypes[12]
+	mi := &file_manager_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -941,7 +1738,7 @@ func (x *CancelJobResponse) String() string {
 func (*CancelJobResponse) ProtoMessage() {}
 
 func (x *CancelJobResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[12]
+	mi := &file_manager_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -954,7 +1751,7 @@ func (x *CancelJobResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelJobResponse.ProtoReflect.Descriptor instead.
 func (*CancelJobResponse) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{12}
+	return file_manager_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *CancelJobResponse) GetSuccess() bool {
@@ -995,7 +1792,7 @@ type NodeResources struct {
 
 func (x *NodeResources) Reset() {
 	*x = NodeResources{}
-	mi := &file_manager_proto_msgTypes[13]
+	mi := &file_manager_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1007,7 +1804,7 @@ func (x *NodeResources) String() string {
 func (*NodeResources) ProtoMessage() {}
 
 func (x *NodeResources) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[13]
+	mi := &file_manager_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1020,7 +1817,7 @@ func (x *NodeResources) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeResources.ProtoReflect.Descriptor instead.
 func (*NodeResources) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{13}
+	return file_manager_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *NodeResources) GetNodeName() string {
@@ -1089,7 +1886,7 @@ type ListNodesRequest struct {
 
 func (x *ListNodesRequest) Reset() {
 	*x = ListNodesRequest{}
-	mi := &file_manager_proto_msgTypes[14]
+	mi := &file_manager_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1101,7 +1898,7 @@ func (x *ListNodesRequest) String() string {
 func (*ListNodesRequest) ProtoMessage() {}
 
 func (x *ListNodesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[14]
+	mi := &file_manager_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1114,7 +1911,7 @@ func (x *ListNodesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListNodesRequest.ProtoReflect.Descriptor instead.
 func (*ListNodesRequest) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{14}
+	return file_manager_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListNodesRequest) GetCsdOnly() bool {
@@ -1134,7 +1931,7 @@ type ListNodesResponse struct {
 
 func (x *ListNodesResponse) Reset() {
 	*x = ListNodesResponse{}
-	mi := &file_manager_proto_msgTypes[15]
+	mi := &file_manager_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1146,7 +1943,7 @@ func (x *ListNodesResponse) String() string {
 func (*ListNodesResponse) ProtoMessage() {}
 
 func (x *ListNodesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_manager_proto_msgTypes[15]
+	mi := &file_manager_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1159,7 +1956,7 @@ func (x *ListNodesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListNodesResponse.ProtoReflect.Descriptor instead.
 func (*ListNodesResponse) Descriptor() ([]byte, []int) {
-	return file_manager_proto_rawDescGZIP(), []int{15}
+	return file_manager_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ListNodesResponse) GetNodes() []*NodeResources {
@@ -1179,7 +1976,7 @@ const file_manager_proto_rawDesc = "" +
 	"\x06memory\x18\x02 \x01(\tR\x06memory\"}\n" +
 	"\tResources\x129\n" +
 	"\brequests\x18\x01 \x01(\v2\x1d.manager.ResourceRequirementsR\brequests\x125\n" +
-	"\x06limits\x18\x02 \x01(\v2\x1d.manager.ResourceRequirementsR\x06limits\"\xba\x01\n" +
+	"\x06limits\x18\x02 \x01(\v2\x1d.manager.ResourceRequirementsR\x06limits\"\x8c\x04\n" +
 	"\x13PreprocessingConfig\x12\x1d\n" +
 	"\n" +
 	"batch_size\x18\x01 \x01(\x05R\tbatchSize\x12\x1d\n" +
@@ -1188,7 +1985,39 @@ const file_manager_proto_rawDesc = "" +
 	"\tn_samples\x18\x03 \x01(\x05R\bnSamples\x12)\n" +
 	"\x10parallel_workers\x18\x04 \x01(\x05R\x0fparallelWorkers\x12\x1d\n" +
 	"\n" +
-	"chunk_size\x18\x05 \x01(\x05R\tchunkSize\"I\n" +
+	"chunk_size\x18\x05 \x01(\x05R\tchunkSize\x12%\n" +
+	"\x0ebatch_strategy\x18\x06 \x01(\tR\rbatchStrategy\x12@\n" +
+	"\x0fbatch_execution\x18\a \x01(\v2\x17.manager.BatchExecutionR\x0ebatchExecution\x12+\n" +
+	"\x11chunking_strategy\x18\b \x01(\tR\x10chunkingStrategy\x12=\n" +
+	"\x0edata_discovery\x18\t \x01(\v2\x16.manager.DataDiscoveryR\rdataDiscovery\x12@\n" +
+	"\x0fdynamic_scaling\x18\n" +
+	" \x01(\v2\x17.manager.DynamicScalingR\x0edynamicScaling\x129\n" +
+	"\foptimization\x18\v \x01(\v2\x15.manager.OptimizationR\foptimization\"\xe7\x01\n" +
+	"\x0eBatchExecution\x12$\n" +
+	"\x0emax_batch_size\x18\x01 \x01(\x05R\fmaxBatchSize\x12*\n" +
+	"\x11max_parallel_jobs\x18\x02 \x01(\x05R\x0fmaxParallelJobs\x12*\n" +
+	"\x11min_parallel_jobs\x18\x03 \x01(\x05R\x0fminParallelJobs\x122\n" +
+	"\x15target_batch_duration\x18\x04 \x01(\x05R\x13targetBatchDuration\x12#\n" +
+	"\rbatch_timeout\x18\x05 \x01(\x05R\fbatchTimeout\"\xe7\x01\n" +
+	"\rDataDiscovery\x12\x18\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x12\x1f\n" +
+	"\vsample_size\x18\x02 \x01(\x05R\n" +
+	"sampleSize\x12!\n" +
+	"\fsample_ratio\x18\x03 \x01(\x01R\vsampleRatio\x12$\n" +
+	"\x0emax_scan_depth\x18\x04 \x01(\x05R\fmaxScanDepth\x12'\n" +
+	"\x0ffile_extensions\x18\x05 \x03(\tR\x0efileExtensions\x12)\n" +
+	"\x10exclude_patterns\x18\x06 \x03(\tR\x0fexcludePatterns\"\xb3\x01\n" +
+	"\x0eDynamicScaling\x12\x18\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x12,\n" +
+	"\x12scale_up_threshold\x18\x02 \x01(\x01R\x10scaleUpThreshold\x120\n" +
+	"\x14scale_down_threshold\x18\x03 \x01(\x01R\x12scaleDownThreshold\x12'\n" +
+	"\x0fcooldown_period\x18\x04 \x01(\x05R\x0ecooldownPeriod\"\xac\x01\n" +
+	"\fOptimization\x12%\n" +
+	"\x0eenable_caching\x18\x01 \x01(\bR\renableCaching\x12\x1d\n" +
+	"\n" +
+	"cache_size\x18\x02 \x01(\tR\tcacheSize\x12-\n" +
+	"\x12enable_compression\x18\x03 \x01(\bR\x11enableCompression\x12'\n" +
+	"\x0fio_optimization\x18\x04 \x01(\tR\x0eioOptimization\"I\n" +
 	"\rDataLocations\x12\x1c\n" +
 	"\tlocations\x18\x01 \x03(\tR\tlocations\x12\x1a\n" +
 	"\bstrategy\x18\x02 \x01(\tR\bstrategy\"F\n" +
@@ -1206,7 +2035,7 @@ const file_manager_proto_rawDesc = "" +
 	"\vparallelism\x18\x01 \x01(\x05R\vparallelism\x12 \n" +
 	"\vcompletions\x18\x02 \x01(\x05R\vcompletions\x12#\n" +
 	"\rbackoff_limit\x18\x03 \x01(\x05R\fbackoffLimit\x12;\n" +
-	"\x1attl_seconds_after_finished\x18\x04 \x01(\x05R\x17ttlSecondsAfterFinished\"\xdb\x06\n" +
+	"\x1attl_seconds_after_finished\x18\x04 \x01(\x05R\x17ttlSecondsAfterFinished\"\x8e\a\n" +
 	"\x10SubmitJobRequest\x12\x15\n" +
 	"\x06job_id\x18\x01 \x01(\tR\x05jobId\x12\x19\n" +
 	"\bjob_name\x18\x02 \x01(\tR\ajobName\x12\x1c\n" +
@@ -1227,20 +2056,52 @@ const file_manager_proto_rawDesc = "" +
 	"\n" +
 	"job_config\x18\x0e \x01(\v2\x12.manager.JobConfigR\tjobConfig\x12=\n" +
 	"\x06labels\x18\x0f \x03(\v2%.manager.SubmitJobRequest.LabelsEntryR\x06labels\x12L\n" +
-	"\vannotations\x18\x10 \x03(\v2*.manager.SubmitJobRequest.AnnotationsEntryR\vannotations\x1a9\n" +
+	"\vannotations\x18\x10 \x03(\v2*.manager.SubmitJobRequest.AnnotationsEntryR\vannotations\x121\n" +
+	"\n" +
+	"batch_plan\x18\x11 \x01(\v2\x12.manager.BatchPlanR\tbatchPlan\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1a>\n" +
 	"\x10AnnotationsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x9d\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xe8\x01\n" +
+	"\tBatchPlan\x12#\n" +
+	"\rtotal_batches\x18\x01 \x01(\x05R\ftotalBatches\x12*\n" +
+	"\x11max_parallel_jobs\x18\x02 \x01(\x05R\x0fmaxParallelJobs\x12,\n" +
+	"\abatches\x18\x03 \x03(\v2\x12.manager.BatchInfoR\abatches\x12\x1a\n" +
+	"\bstrategy\x18\x04 \x01(\tR\bstrategy\x12@\n" +
+	"\rdata_analysis\x18\x05 \x01(\v2\x1b.manager.DataAnalysisResultR\fdataAnalysis\"\xb7\x02\n" +
+	"\tBatchInfo\x12\x19\n" +
+	"\bbatch_id\x18\x01 \x01(\tR\abatchId\x12\x1d\n" +
+	"\n" +
+	"file_paths\x18\x02 \x03(\tR\tfilePaths\x120\n" +
+	"\x14estimated_size_bytes\x18\x03 \x01(\x03R\x12estimatedSizeBytes\x12=\n" +
+	"\tbatch_env\x18\x04 \x03(\v2 .manager.BatchInfo.BatchEnvEntryR\bbatchEnv\x12\x1d\n" +
+	"\n" +
+	"item_count\x18\x05 \x01(\x05R\titemCount\x12#\n" +
+	"\rnode_affinity\x18\x06 \x01(\tR\fnodeAffinity\x1a;\n" +
+	"\rBatchEnvEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xf4\x02\n" +
+	"\x12DataAnalysisResult\x12\x1f\n" +
+	"\vtotal_files\x18\x01 \x01(\x05R\n" +
+	"totalFiles\x12(\n" +
+	"\x10total_size_bytes\x18\x02 \x01(\x03R\x0etotalSizeBytes\x12\"\n" +
+	"\ravg_file_size\x18\x03 \x01(\x03R\vavgFileSize\x12I\n" +
+	"\n" +
+	"file_types\x18\x04 \x03(\v2*.manager.DataAnalysisResult.FileTypesEntryR\tfileTypes\x12A\n" +
+	"\x0ediscovery_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\rdiscoveryTime\x12#\n" +
+	"\rsampled_files\x18\x06 \x01(\x05R\fsampledFiles\x1a<\n" +
+	"\x0eFileTypesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\x05R\x05value:\x028\x01\"\x9d\x01\n" +
 	"\x11SubmitJobResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12\x15\n" +
 	"\x06job_id\x18\x03 \x01(\tR\x05jobId\x12=\n" +
 	"\fsubmitted_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\vsubmittedAt\",\n" +
 	"\x13GetJobStatusRequest\x12\x15\n" +
-	"\x06job_id\x18\x01 \x01(\tR\x05jobId\"\xb9\x02\n" +
+	"\x06job_id\x18\x01 \x01(\tR\x05jobId\"\x81\x03\n" +
 	"\x14GetJobStatusResponse\x12\x15\n" +
 	"\x06job_id\x18\x01 \x01(\tR\x05jobId\x12*\n" +
 	"\x06status\x18\x02 \x01(\x0e2\x12.manager.JobStatusR\x06status\x12\x18\n" +
@@ -1250,7 +2111,26 @@ const file_manager_proto_rawDesc = "" +
 	"\x0fcompletion_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\x0ecompletionTime\x12\x1f\n" +
 	"\voutput_path\x18\x06 \x01(\tR\n" +
 	"outputPath\x12#\n" +
-	"\rerror_message\x18\a \x01(\tR\ferrorMessage\"A\n" +
+	"\rerror_message\x18\a \x01(\tR\ferrorMessage\x12F\n" +
+	"\x0fbatch_execution\x18\b \x01(\v2\x1d.manager.BatchExecutionStatusR\x0ebatchExecution\"\xa1\x03\n" +
+	"\x14BatchExecutionStatus\x12#\n" +
+	"\rtotal_batches\x18\x01 \x01(\x05R\ftotalBatches\x12+\n" +
+	"\x11completed_batches\x18\x02 \x01(\x05R\x10completedBatches\x12%\n" +
+	"\x0efailed_batches\x18\x03 \x01(\x05R\rfailedBatches\x12'\n" +
+	"\x0frunning_batches\x18\x04 \x01(\x05R\x0erunningBatches\x12;\n" +
+	"\x0eactive_batches\x18\x05 \x03(\v2\x14.manager.BatchStatusR\ractiveBatches\x12%\n" +
+	"\x0ebatch_strategy\x18\x06 \x01(\tR\rbatchStrategy\x124\n" +
+	"\x16average_batch_duration\x18\a \x01(\x05R\x14averageBatchDuration\x12M\n" +
+	"\x14estimated_completion\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\x13estimatedCompletion\"\xdd\x01\n" +
+	"\vBatchStatus\x12\x19\n" +
+	"\bbatch_id\x18\x01 \x01(\tR\abatchId\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x129\n" +
+	"\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tstartTime\x12\x1d\n" +
+	"\n" +
+	"item_count\x18\x04 \x01(\x05R\titemCount\x12'\n" +
+	"\x0fprocessed_items\x18\x05 \x01(\x05R\x0eprocessedItems\x12\x18\n" +
+	"\amessage\x18\x06 \x01(\tR\amessage\"A\n" +
 	"\x10CancelJobRequest\x12\x15\n" +
 	"\x06job_id\x18\x01 \x01(\tR\x05jobId\x12\x16\n" +
 	"\x06reason\x18\x02 \x01(\tR\x06reason\"\x86\x01\n" +
@@ -1299,61 +2179,86 @@ func file_manager_proto_rawDescGZIP() []byte {
 }
 
 var file_manager_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_manager_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_manager_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
 var file_manager_proto_goTypes = []any{
 	(JobStatus)(0),                // 0: manager.JobStatus
 	(*ResourceRequirements)(nil),  // 1: manager.ResourceRequirements
 	(*Resources)(nil),             // 2: manager.Resources
 	(*PreprocessingConfig)(nil),   // 3: manager.PreprocessingConfig
-	(*DataLocations)(nil),         // 4: manager.DataLocations
-	(*CSDConfig)(nil),             // 5: manager.CSDConfig
-	(*NodeScheduling)(nil),        // 6: manager.NodeScheduling
-	(*JobConfig)(nil),             // 7: manager.JobConfig
-	(*SubmitJobRequest)(nil),      // 8: manager.SubmitJobRequest
-	(*SubmitJobResponse)(nil),     // 9: manager.SubmitJobResponse
-	(*GetJobStatusRequest)(nil),   // 10: manager.GetJobStatusRequest
-	(*GetJobStatusResponse)(nil),  // 11: manager.GetJobStatusResponse
-	(*CancelJobRequest)(nil),      // 12: manager.CancelJobRequest
-	(*CancelJobResponse)(nil),     // 13: manager.CancelJobResponse
-	(*NodeResources)(nil),         // 14: manager.NodeResources
-	(*ListNodesRequest)(nil),      // 15: manager.ListNodesRequest
-	(*ListNodesResponse)(nil),     // 16: manager.ListNodesResponse
-	nil,                           // 17: manager.NodeScheduling.NodeSelectorEntry
-	nil,                           // 18: manager.SubmitJobRequest.LabelsEntry
-	nil,                           // 19: manager.SubmitJobRequest.AnnotationsEntry
-	(*timestamppb.Timestamp)(nil), // 20: google.protobuf.Timestamp
+	(*BatchExecution)(nil),        // 4: manager.BatchExecution
+	(*DataDiscovery)(nil),         // 5: manager.DataDiscovery
+	(*DynamicScaling)(nil),        // 6: manager.DynamicScaling
+	(*Optimization)(nil),          // 7: manager.Optimization
+	(*DataLocations)(nil),         // 8: manager.DataLocations
+	(*CSDConfig)(nil),             // 9: manager.CSDConfig
+	(*NodeScheduling)(nil),        // 10: manager.NodeScheduling
+	(*JobConfig)(nil),             // 11: manager.JobConfig
+	(*SubmitJobRequest)(nil),      // 12: manager.SubmitJobRequest
+	(*BatchPlan)(nil),             // 13: manager.BatchPlan
+	(*BatchInfo)(nil),             // 14: manager.BatchInfo
+	(*DataAnalysisResult)(nil),    // 15: manager.DataAnalysisResult
+	(*SubmitJobResponse)(nil),     // 16: manager.SubmitJobResponse
+	(*GetJobStatusRequest)(nil),   // 17: manager.GetJobStatusRequest
+	(*GetJobStatusResponse)(nil),  // 18: manager.GetJobStatusResponse
+	(*BatchExecutionStatus)(nil),  // 19: manager.BatchExecutionStatus
+	(*BatchStatus)(nil),           // 20: manager.BatchStatus
+	(*CancelJobRequest)(nil),      // 21: manager.CancelJobRequest
+	(*CancelJobResponse)(nil),     // 22: manager.CancelJobResponse
+	(*NodeResources)(nil),         // 23: manager.NodeResources
+	(*ListNodesRequest)(nil),      // 24: manager.ListNodesRequest
+	(*ListNodesResponse)(nil),     // 25: manager.ListNodesResponse
+	nil,                           // 26: manager.NodeScheduling.NodeSelectorEntry
+	nil,                           // 27: manager.SubmitJobRequest.LabelsEntry
+	nil,                           // 28: manager.SubmitJobRequest.AnnotationsEntry
+	nil,                           // 29: manager.BatchInfo.BatchEnvEntry
+	nil,                           // 30: manager.DataAnalysisResult.FileTypesEntry
+	(*timestamppb.Timestamp)(nil), // 31: google.protobuf.Timestamp
 }
 var file_manager_proto_depIdxs = []int32{
 	1,  // 0: manager.Resources.requests:type_name -> manager.ResourceRequirements
 	1,  // 1: manager.Resources.limits:type_name -> manager.ResourceRequirements
-	17, // 2: manager.NodeScheduling.node_selector:type_name -> manager.NodeScheduling.NodeSelectorEntry
-	2,  // 3: manager.SubmitJobRequest.resources:type_name -> manager.Resources
-	3,  // 4: manager.SubmitJobRequest.preprocessing:type_name -> manager.PreprocessingConfig
-	4,  // 5: manager.SubmitJobRequest.data_locations:type_name -> manager.DataLocations
-	5,  // 6: manager.SubmitJobRequest.csd:type_name -> manager.CSDConfig
-	6,  // 7: manager.SubmitJobRequest.node_scheduling:type_name -> manager.NodeScheduling
-	7,  // 8: manager.SubmitJobRequest.job_config:type_name -> manager.JobConfig
-	18, // 9: manager.SubmitJobRequest.labels:type_name -> manager.SubmitJobRequest.LabelsEntry
-	19, // 10: manager.SubmitJobRequest.annotations:type_name -> manager.SubmitJobRequest.AnnotationsEntry
-	20, // 11: manager.SubmitJobResponse.submitted_at:type_name -> google.protobuf.Timestamp
-	0,  // 12: manager.GetJobStatusResponse.status:type_name -> manager.JobStatus
-	20, // 13: manager.GetJobStatusResponse.start_time:type_name -> google.protobuf.Timestamp
-	20, // 14: manager.GetJobStatusResponse.completion_time:type_name -> google.protobuf.Timestamp
-	20, // 15: manager.CancelJobResponse.cancelled_at:type_name -> google.protobuf.Timestamp
-	14, // 16: manager.ListNodesResponse.nodes:type_name -> manager.NodeResources
-	8,  // 17: manager.InstorageManager.SubmitJob:input_type -> manager.SubmitJobRequest
-	10, // 18: manager.InstorageManager.GetJobStatus:input_type -> manager.GetJobStatusRequest
-	12, // 19: manager.InstorageManager.CancelJob:input_type -> manager.CancelJobRequest
-	15, // 20: manager.InstorageManager.ListNodes:input_type -> manager.ListNodesRequest
-	9,  // 21: manager.InstorageManager.SubmitJob:output_type -> manager.SubmitJobResponse
-	11, // 22: manager.InstorageManager.GetJobStatus:output_type -> manager.GetJobStatusResponse
-	13, // 23: manager.InstorageManager.CancelJob:output_type -> manager.CancelJobResponse
-	16, // 24: manager.InstorageManager.ListNodes:output_type -> manager.ListNodesResponse
-	21, // [21:25] is the sub-list for method output_type
-	17, // [17:21] is the sub-list for method input_type
-	17, // [17:17] is the sub-list for extension type_name
-	17, // [17:17] is the sub-list for extension extendee
-	0,  // [0:17] is the sub-list for field type_name
+	4,  // 2: manager.PreprocessingConfig.batch_execution:type_name -> manager.BatchExecution
+	5,  // 3: manager.PreprocessingConfig.data_discovery:type_name -> manager.DataDiscovery
+	6,  // 4: manager.PreprocessingConfig.dynamic_scaling:type_name -> manager.DynamicScaling
+	7,  // 5: manager.PreprocessingConfig.optimization:type_name -> manager.Optimization
+	26, // 6: manager.NodeScheduling.node_selector:type_name -> manager.NodeScheduling.NodeSelectorEntry
+	2,  // 7: manager.SubmitJobRequest.resources:type_name -> manager.Resources
+	3,  // 8: manager.SubmitJobRequest.preprocessing:type_name -> manager.PreprocessingConfig
+	8,  // 9: manager.SubmitJobRequest.data_locations:type_name -> manager.DataLocations
+	9,  // 10: manager.SubmitJobRequest.csd:type_name -> manager.CSDConfig
+	10, // 11: manager.SubmitJobRequest.node_scheduling:type_name -> manager.NodeScheduling
+	11, // 12: manager.SubmitJobRequest.job_config:type_name -> manager.JobConfig
+	27, // 13: manager.SubmitJobRequest.labels:type_name -> manager.SubmitJobRequest.LabelsEntry
+	28, // 14: manager.SubmitJobRequest.annotations:type_name -> manager.SubmitJobRequest.AnnotationsEntry
+	13, // 15: manager.SubmitJobRequest.batch_plan:type_name -> manager.BatchPlan
+	14, // 16: manager.BatchPlan.batches:type_name -> manager.BatchInfo
+	15, // 17: manager.BatchPlan.data_analysis:type_name -> manager.DataAnalysisResult
+	29, // 18: manager.BatchInfo.batch_env:type_name -> manager.BatchInfo.BatchEnvEntry
+	30, // 19: manager.DataAnalysisResult.file_types:type_name -> manager.DataAnalysisResult.FileTypesEntry
+	31, // 20: manager.DataAnalysisResult.discovery_time:type_name -> google.protobuf.Timestamp
+	31, // 21: manager.SubmitJobResponse.submitted_at:type_name -> google.protobuf.Timestamp
+	0,  // 22: manager.GetJobStatusResponse.status:type_name -> manager.JobStatus
+	31, // 23: manager.GetJobStatusResponse.start_time:type_name -> google.protobuf.Timestamp
+	31, // 24: manager.GetJobStatusResponse.completion_time:type_name -> google.protobuf.Timestamp
+	19, // 25: manager.GetJobStatusResponse.batch_execution:type_name -> manager.BatchExecutionStatus
+	20, // 26: manager.BatchExecutionStatus.active_batches:type_name -> manager.BatchStatus
+	31, // 27: manager.BatchExecutionStatus.estimated_completion:type_name -> google.protobuf.Timestamp
+	31, // 28: manager.BatchStatus.start_time:type_name -> google.protobuf.Timestamp
+	31, // 29: manager.CancelJobResponse.cancelled_at:type_name -> google.protobuf.Timestamp
+	23, // 30: manager.ListNodesResponse.nodes:type_name -> manager.NodeResources
+	12, // 31: manager.InstorageManager.SubmitJob:input_type -> manager.SubmitJobRequest
+	17, // 32: manager.InstorageManager.GetJobStatus:input_type -> manager.GetJobStatusRequest
+	21, // 33: manager.InstorageManager.CancelJob:input_type -> manager.CancelJobRequest
+	24, // 34: manager.InstorageManager.ListNodes:input_type -> manager.ListNodesRequest
+	16, // 35: manager.InstorageManager.SubmitJob:output_type -> manager.SubmitJobResponse
+	18, // 36: manager.InstorageManager.GetJobStatus:output_type -> manager.GetJobStatusResponse
+	22, // 37: manager.InstorageManager.CancelJob:output_type -> manager.CancelJobResponse
+	25, // 38: manager.InstorageManager.ListNodes:output_type -> manager.ListNodesResponse
+	35, // [35:39] is the sub-list for method output_type
+	31, // [31:35] is the sub-list for method input_type
+	31, // [31:31] is the sub-list for extension type_name
+	31, // [31:31] is the sub-list for extension extendee
+	0,  // [0:31] is the sub-list for field type_name
 }
 
 func init() { file_manager_proto_init() }
@@ -1367,7 +2272,7 @@ func file_manager_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_manager_proto_rawDesc), len(file_manager_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   19,
+			NumMessages:   30,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
