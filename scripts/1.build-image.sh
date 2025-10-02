@@ -1,6 +1,6 @@
 registry="ketidevit2"
 image_name="instorage-manager"
-version="v0.0.1"
+version="v0.0.7"
 dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 # build binary file

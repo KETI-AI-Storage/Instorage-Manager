@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/go-logr/logr"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -545,4 +546,110 @@ func (s *InstorageManagerServer) processBatchesByMemoryOrder(jobId string, batch
 	for _, bwm := range batchesWithMemory {
 		go s.processBatch(jobId, bwm.batch, semaphore, results)
 	}
+}
+
+// SetupWebhookRoutes configures HTTP webhook endpoints
+func (s *InstorageManagerServer) SetupWebhookRoutes(router *gin.Engine) {
+	webhook := router.Group("/api/v1/webhook")
+	{
+		webhook.POST("/container/status", s.handleContainerStatusUpdate)
+		webhook.GET("/health", s.handleWebhookHealth)
+	}
+}
+
+// handleContainerStatusUpdate processes container status updates from container-processor
+func (s *InstorageManagerServer) handleContainerStatusUpdate(c *gin.Context) {
+	var update ContainerStatusUpdate
+
+	if err := c.ShouldBindJSON(&update); err != nil {
+		s.logger.Error(err, "Invalid webhook payload")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   "Invalid JSON payload",
+		})
+		return
+	}
+
+	s.logger.Info("Received container status update",
+		"jobId", update.JobID,
+		"status", update.Status,
+		"message", update.Message,
+		"containerId", update.ContainerID,
+	)
+
+	// Validate required fields
+	if update.JobID == "" || update.Status == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   "job_id and status are required",
+		})
+		return
+	}
+
+	// Find and update job state
+	s.jobMux.Lock()
+	defer s.jobMux.Unlock()
+
+	jobState, exists := s.jobs[update.JobID]
+	if !exists {
+		s.logger.Error(fmt.Errorf("job not found"), "Container status update for unknown job", "jobId", update.JobID)
+		c.JSON(http.StatusNotFound, gin.H{
+			"success": false,
+			"error":   fmt.Sprintf("job %s not found", update.JobID),
+		})
+		return
+	}
+
+	// Convert status to protobuf enum
+	var pbStatus pb.JobStatus
+	switch update.Status {
+	case "running":
+		pbStatus = pb.JobStatus_JOB_STATUS_RUNNING
+	case "completed":
+		pbStatus = pb.JobStatus_JOB_STATUS_COMPLETED
+		jobState.CompletionTime = timestamppb.Now()
+	case "failed":
+		pbStatus = pb.JobStatus_JOB_STATUS_FAILED
+		jobState.CompletionTime = timestamppb.Now()
+		if update.ErrorMessage != "" {
+			jobState.ErrorMessage = update.ErrorMessage
+		}
+	case "cancelled":
+		pbStatus = pb.JobStatus_JOB_STATUS_CANCELLED
+		jobState.CompletionTime = timestamppb.Now()
+	default:
+		s.logger.Error(fmt.Errorf("unknown status"), "Unknown container status", "status", update.Status)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"success": false,
+			"error":   fmt.Sprintf("unknown status: %s", update.Status),
+		})
+		return
+	}
+
+	// Update job state
+	jobState.Status = pbStatus
+	jobState.Message = update.Message
+
+	s.logger.Info("Updated job status from container processor webhook",
+		"jobId", update.JobID,
+		"oldStatus", jobState.Status,
+		"newStatus", pbStatus,
+		"message", update.Message,
+	)
+
+	c.JSON(http.StatusOK, gin.H{
+		"success": true,
+		"message": "Status updated successfully",
+		"job_id":  update.JobID,
+	})
+}
+
+// handleWebhookHealth returns health status for webhook endpoints
+func (s *InstorageManagerServer) handleWebhookHealth(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status":    "healthy",
+		"service":   "instorage-manager-webhook",
+		"timestamp": time.Now().Unix(),
+		"node":      s.nodeName,
+	})
 }

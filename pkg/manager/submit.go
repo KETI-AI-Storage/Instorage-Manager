@@ -1,11 +1,11 @@
 package manager
 
 import (
-	"bytes"
+	// "bytes"  // Commented out for test mode
 	"encoding/json"
 	"fmt"
 	pb "instorage-manager/pkg/proto"
-	"net/http"
+	// "net/http"  // Commented out for test mode
 	"strings"
 )
 
@@ -90,8 +90,25 @@ func (s *InstorageManagerServer) submitToContainerProcessor(req *pb.SubmitJobReq
 		return fmt.Errorf("failed to marshal container request: %w", err)
 	}
 
-	// Send HTTP request to container processor
+	// [TEST MODE] Print request instead of sending HTTP request
 	url := fmt.Sprintf("%s/api/v1/jobs", "s.csdEndpoint")
+	
+	s.logger.Info("TEST MODE: Would submit job to container processor",
+		"url", url,
+		"jobId", containerReq.JobID,
+		"jobName", containerReq.JobName,
+		"namespace", containerReq.Namespace,
+		"image", containerReq.Image,
+		"dataPath", containerReq.DataPath,
+		"outputPath", containerReq.OutputPath,
+		"environment", fmt.Sprintf("%+v", containerReq.Environment),
+		"resources", fmt.Sprintf("%+v", containerReq.Resources),
+		"labels", fmt.Sprintf("%+v", containerReq.Labels),
+		"requestPayload", string(jsonData),
+	)
+
+	// [COMMENTED OUT] Actual HTTP request code for testing
+	/*
 	httpReq, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return fmt.Errorf("failed to create HTTP request: %w", err)
@@ -124,6 +141,7 @@ func (s *InstorageManagerServer) submitToContainerProcessor(req *pb.SubmitJobReq
 		"containerId", containerResp.ContainerID,
 		"message", containerResp.Message,
 	)
+	*/
 
 	return nil
 }

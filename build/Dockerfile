@@ -23,7 +23,7 @@ RUN chmod +x ${OPERATOR}
 # Switch to non-root user
 USER ${USER_UID}
 
-# Expose health probe port
-EXPOSE 8081
+# Expose gRPC and HTTP ports
+EXPOSE 50051 8080
 
 ENTRYPOINT ["/usr/local/bin/instorage-manager"]

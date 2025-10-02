@@ -73,3 +73,14 @@ type BatchResult struct {
 	EndTime      time.Time
 	ItemCount    int32
 }
+
+// ContainerStatusUpdate represents a webhook payload for status updates from container processor
+type ContainerStatusUpdate struct {
+	JobID        string `json:"job_id"`
+	Status       string `json:"status"` // running, completed, failed, cancelled
+	Message      string `json:"message"`
+	ContainerID  string `json:"container_id,omitempty"`
+	ErrorMessage string `json:"error_message,omitempty"`
+	ExitCode     *int   `json:"exit_code,omitempty"`
+	Timestamp    string `json:"timestamp"`
+}
