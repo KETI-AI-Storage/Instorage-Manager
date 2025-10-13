@@ -86,7 +86,6 @@ message DataLocations {
 // CSD configuration
 message CSDConfig {
     bool enabled = 1;
-    string device_path = 2;
 }
 
 // Node scheduling configuration

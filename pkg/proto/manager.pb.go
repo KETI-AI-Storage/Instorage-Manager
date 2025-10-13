@@ -669,7 +669,6 @@ func (x *DataLocations) GetStrategy() string {
 type CSDConfig struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Enabled       bool                   `protobuf:"varint,1,opt,name=enabled,proto3" json:"enabled,omitempty"`
-	DevicePath    string                 `protobuf:"bytes,2,opt,name=device_path,json=devicePath,proto3" json:"device_path,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -709,13 +708,6 @@ func (x *CSDConfig) GetEnabled() bool {
 		return x.Enabled
 	}
 	return false
-}
-
-func (x *CSDConfig) GetDevicePath() string {
-	if x != nil {
-		return x.DevicePath
-	}
-	return ""
 }
 
 // Node scheduling configuration
@@ -2020,11 +2012,9 @@ const file_manager_proto_rawDesc = "" +
 	"\x0fio_optimization\x18\x04 \x01(\tR\x0eioOptimization\"I\n" +
 	"\rDataLocations\x12\x1c\n" +
 	"\tlocations\x18\x01 \x03(\tR\tlocations\x12\x1a\n" +
-	"\bstrategy\x18\x02 \x01(\tR\bstrategy\"F\n" +
+	"\bstrategy\x18\x02 \x01(\tR\bstrategy\"%\n" +
 	"\tCSDConfig\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled\x12\x1f\n" +
-	"\vdevice_path\x18\x02 \x01(\tR\n" +
-	"devicePath\"\xbe\x01\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\"\xbe\x01\n" +
 	"\x0eNodeScheduling\x12\x1b\n" +
 	"\tnode_name\x18\x01 \x01(\tR\bnodeName\x12N\n" +
 	"\rnode_selector\x18\x02 \x03(\v2).manager.NodeScheduling.NodeSelectorEntryR\fnodeSelector\x1a?\n" +
