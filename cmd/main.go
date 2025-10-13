@@ -24,7 +24,7 @@ import (
 )
 
 const (
-	DefaultGRPCPort = "50051"
+	DefaultGRPCPort = "40110"
 	DefaultHTTPPort = "8080"
 )
 
@@ -79,10 +79,10 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	httpRouter := gin.New()
 	httpRouter.Use(gin.Logger(), gin.Recovery())
-	
+
 	// Setup webhook endpoints
 	instorageServer.SetupWebhookRoutes(httpRouter)
-	
+
 	httpServer := &http.Server{
 		Addr:    fmt.Sprintf(":%s", *httpPort),
 		Handler: httpRouter,
