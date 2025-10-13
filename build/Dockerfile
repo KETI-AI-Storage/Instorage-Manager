@@ -24,6 +24,6 @@ RUN chmod +x ${OPERATOR}
 USER ${USER_UID}
 
 # Expose gRPC and HTTP ports
-EXPOSE 50051 8080
+EXPOSE 40110 8080
 
 ENTRYPOINT ["/usr/local/bin/instorage-manager"]
