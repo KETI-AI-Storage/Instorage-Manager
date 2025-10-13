@@ -2,9 +2,12 @@ package manager
 
 import (
 	// "bytes"  // Commented out for test mode
+	"bytes"
 	"encoding/json"
 	"fmt"
 	pb "instorage-manager/pkg/proto"
+	"net/http"
+
 	// "net/http"  // Commented out for test mode
 	"strings"
 )
@@ -90,9 +93,13 @@ func (s *InstorageManagerServer) submitToContainerProcessor(req *pb.SubmitJobReq
 		return fmt.Errorf("failed to marshal container request: %w", err)
 	}
 
+	endpoint, err := s.getCSDEndpoint(containerReq.DataPath)
+	if err != nil {
+		return fmt.Errorf("%w", err)
+	}
+	url := fmt.Sprintf("http://%s:40120/api/v1/containers", endpoint)
+
 	// [TEST MODE] Print request instead of sending HTTP request
-	url := fmt.Sprintf("%s/api/v1/jobs", "s.csdEndpoint")
-	
 	s.logger.Info("TEST MODE: Would submit job to container processor",
 		"url", url,
 		"jobId", containerReq.JobID,
@@ -107,8 +114,6 @@ func (s *InstorageManagerServer) submitToContainerProcessor(req *pb.SubmitJobReq
 		"requestPayload", string(jsonData),
 	)
 
-	// [COMMENTED OUT] Actual HTTP request code for testing
-	/*
 	httpReq, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return fmt.Errorf("failed to create HTTP request: %w", err)
@@ -141,7 +146,6 @@ func (s *InstorageManagerServer) submitToContainerProcessor(req *pb.SubmitJobReq
 		"containerId", containerResp.ContainerID,
 		"message", containerResp.Message,
 	)
-	*/
 
 	return nil
 }
@@ -183,9 +187,6 @@ func (s *InstorageManagerServer) buildEnvironmentVariables(req *pb.SubmitJobRequ
 
 	if req.Csd != nil && req.Csd.Enabled {
 		env["CSD_ENABLED"] = "true"
-		if req.Csd.DevicePath != "" {
-			env["CSD_DEVICE_PATH"] = req.Csd.DevicePath
-		}
 	}
 
 	return env
@@ -210,4 +211,16 @@ func (s *InstorageManagerServer) convertResources(res *pb.Resources) *ContainerR
 	}
 
 	return containerRes
+}
+
+func (s *InstorageManagerServer) getCSDEndpoint(dataPath string) (string, error) {
+	// dataPath에서 csd 뒤의 숫자 추출
+	var csdNum string
+	if len(dataPath) >= 4 && dataPath[:3] == "csd" {
+		csdNum = dataPath[3:4] // "csd1" -> "1"
+	} else {
+		return "", fmt.Errorf("Invalid dataPath : ", dataPath)
+	}
+
+	return fmt.Sprintf("10.1.%s.2", csdNum), nil
 }
