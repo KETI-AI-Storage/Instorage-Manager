@@ -17,6 +17,9 @@ func (s *InstorageManagerServer) monitorJob(jobId string) {
 
 	s.logger.Info("Starting job monitoring", "jobId", jobId)
 
+	consecutiveErrors := 0
+	maxConsecutiveErrors := 5 // Stop monitoring after 5 consecutive errors
+
 	for range ticker.C {
 		// Check if job was cancelled locally
 		s.jobMux.RLock()
@@ -31,9 +34,34 @@ func (s *InstorageManagerServer) monitorJob(jobId string) {
 		// Get status from container processor
 		status, err := s.getJobStatusFromContainerProcessor(jobId)
 		if err != nil {
-			s.logger.Error(err, "Failed to get job status from container processor", "jobId", jobId)
+			consecutiveErrors++
+			s.logger.Error(err, "Failed to get job status from container processor",
+				"jobId", jobId,
+				"consecutiveErrors", consecutiveErrors,
+			)
+
+			// If we have too many consecutive errors, assume the resource was deleted
+			if consecutiveErrors >= maxConsecutiveErrors {
+				s.logger.Info("Job monitoring stopped due to consecutive errors (resource may have been deleted)",
+					"jobId", jobId,
+				)
+
+				// Update job state to failed
+				s.jobMux.Lock()
+				if jobState, exists := s.jobs[jobId]; exists {
+					jobState.Status = pb.JobStatus_JOB_STATUS_FAILED
+					jobState.Message = "Job monitoring stopped - unable to contact container processor"
+					jobState.ErrorMessage = "Resource may have been deleted via kubectl"
+					jobState.CompletionTime = timestamppb.Now()
+				}
+				s.jobMux.Unlock()
+				return
+			}
 			continue
 		}
+
+		// Reset error counter on successful status check
+		consecutiveErrors = 0
 
 		// Update job state based on container status
 		s.updateJobStateFromContainer(jobId, status)
@@ -164,6 +192,8 @@ func (s *InstorageManagerServer) monitorSingleBatchExecution(jobId, batchId stri
 	defer timeout.Stop()
 
 	batchJobId := fmt.Sprintf("%s-batch-%s", jobId, batchId)
+	consecutiveErrors := 0
+	maxConsecutiveErrors := 5 // Stop monitoring after 5 consecutive errors
 
 	for {
 		select {
@@ -174,9 +204,27 @@ func (s *InstorageManagerServer) monitorSingleBatchExecution(jobId, batchId stri
 			// Check container processor for batch status
 			status, err := s.getJobStatusFromContainerProcessor(batchJobId)
 			if err != nil {
-				s.logger.V(1).Info("Failed to get batch status", "error", err.Error())
+				consecutiveErrors++
+				s.logger.V(1).Info("Failed to get batch status",
+					"error", err.Error(),
+					"consecutiveErrors", consecutiveErrors,
+					"batchJobId", batchJobId,
+				)
+
+				// If we have too many consecutive errors, assume the resource was deleted
+				if consecutiveErrors >= maxConsecutiveErrors {
+					s.logger.Info("Batch monitoring stopped due to consecutive errors (resource may have been deleted)",
+						"jobId", jobId,
+						"batchId", batchId,
+						"batchJobId", batchJobId,
+					)
+					return false, "Batch monitoring failed", "Unable to contact container processor - resource may have been deleted"
+				}
 				continue
 			}
+
+			// Reset error counter on successful status check
+			consecutiveErrors = 0
 
 			switch status.Status {
 			case "completed":
