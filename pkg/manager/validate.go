@@ -20,9 +20,6 @@ func (s *InstorageManagerServer) validateSubmitJobRequest(req *pb.SubmitJobReque
 	if req.JobName == "" {
 		return fmt.Errorf("job_name is required")
 	}
-	if req.Namespace == "" {
-		return fmt.Errorf("namespace is required")
-	}
 	if req.Image == "" {
 		return fmt.Errorf("image is required")
 	}
@@ -198,25 +195,37 @@ func (s *InstorageManagerServer) validatePreprocessingConfig(config *pb.Preproce
 
 // validateDataLocations validates data locations configuration
 func (s *InstorageManagerServer) validateDataLocations(config *pb.DataLocations) error {
-	if len(config.Locations) == 0 {
-		return fmt.Errorf("at least one data location must be specified")
+	if config == nil {
+		return fmt.Errorf("dataLocations must be provided")
 	}
 
+	strategy := config.Strategy
+	if strategy == "" {
+		strategy = "co-locate"
+	}
 	validStrategies := map[string]bool{
-		"round-robin": true,
-		"random":      true,
-		"first-fit":   true,
-		"best-fit":    true,
+		"co-locate":  true,
+		"fan-out":    true,
+		"replicated": true,
+	}
+	if !validStrategies[strategy] {
+		return fmt.Errorf("invalid strategy %q, must be one of: co-locate, fan-out, replicated", strategy)
 	}
 
-	if config.Strategy != "" && !validStrategies[config.Strategy] {
-		return fmt.Errorf("invalid strategy '%s', must be one of: round-robin, random, first-fit, best-fit", config.Strategy)
+	if len(config.Locations) == 0 {
+		return fmt.Errorf("at least one data location (csd ID) must be specified")
 	}
+	csdRe := regexp.MustCompile(`^csd[0-9]+$`)
 
-	for i, location := range config.Locations {
-		if !s.isValidPath(location) {
-			return fmt.Errorf("invalid data location at index %d: %s", i, location)
+	locSet := make(map[string]struct{}, len(config.Locations))
+	for i, loc := range config.Locations {
+		if !csdRe.MatchString(loc) {
+			return fmt.Errorf("invalid data location at index %d: %q (must match ^csd[0-9]+$)", i, loc)
 		}
+		if _, exists := locSet[loc]; exists {
+			return fmt.Errorf("duplicate data location: %q", loc)
+		}
+		locSet[loc] = struct{}{}
 	}
 
 	return nil
@@ -224,17 +233,8 @@ func (s *InstorageManagerServer) validateDataLocations(config *pb.DataLocations)
 
 // validateCSDConfig validates CSD configuration
 func (s *InstorageManagerServer) validateCSDConfig(config *pb.CSDConfig) error {
-	if config.Enabled && config.DevicePath == "" {
-		return fmt.Errorf("devicePath is required when CSD is enabled")
-	}
-
-	if config.DevicePath != "" {
-		if !s.isValidPath(config.DevicePath) {
-			return fmt.Errorf("invalid devicePath: %s", config.DevicePath)
-		}
-		if !strings.HasPrefix(config.DevicePath, "/dev/") {
-			return fmt.Errorf("devicePath should typically start with /dev/: %s", config.DevicePath)
-		}
+	if config == nil {
+		return nil
 	}
 
 	return nil
