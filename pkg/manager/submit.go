@@ -7,8 +7,6 @@ import (
 	"fmt"
 	pb "instorage-manager/pkg/proto"
 	"net/http"
-
-	// "net/http"  // Commented out for test mode
 	"strings"
 )
 
@@ -30,7 +28,6 @@ func (s *InstorageManagerServer) createBatchRequest(jobId string, batch *pb.Batc
 		TargetNode:      originalReq.TargetNode,
 		Resources:       originalReq.Resources,
 		Preprocessing:   originalReq.Preprocessing,
-		DataLocations:   originalReq.DataLocations,
 		Csd:             originalReq.Csd,
 		NodeScheduling:  originalReq.NodeScheduling,
 		JobConfig:       originalReq.JobConfig,
@@ -93,11 +90,20 @@ func (s *InstorageManagerServer) submitToContainerProcessor(req *pb.SubmitJobReq
 		return fmt.Errorf("failed to marshal container request: %w", err)
 	}
 
-	endpoint, err := s.getCSDEndpoint(containerReq.DataPath)
+	endpoint, err := s.getCSDEndpoint(req.DataLocations.Locations)
 	if err != nil {
 		return fmt.Errorf("%w", err)
 	}
-	url := fmt.Sprintf("http://%s:40120/api/v1/containers", endpoint)
+	url := fmt.Sprintf("%s/containers", endpoint)
+
+	s.jobMux.RLock()
+	jobState, exists := s.jobs[req.JobId]
+	jobState.CSDEndpoint = endpoint
+	s.jobMux.RUnlock()
+
+	if !exists {
+		return fmt.Errorf("job state not exist: %s", req.JobId)
+	}
 
 	// [TEST MODE] Print request instead of sending HTTP request
 	s.logger.Info("TEST MODE: Would submit job to container processor",
@@ -175,16 +181,6 @@ func (s *InstorageManagerServer) buildEnvironmentVariables(req *pb.SubmitJobRequ
 		}
 	}
 
-	if req.DataLocations != nil {
-		if len(req.DataLocations.Locations) > 0 {
-			locationsJson, _ := json.Marshal(req.DataLocations.Locations)
-			env["DATA_LOCATIONS"] = string(locationsJson)
-		}
-		if req.DataLocations.Strategy != "" {
-			env["DATA_STRATEGY"] = req.DataLocations.Strategy
-		}
-	}
-
 	if req.Csd != nil && req.Csd.Enabled {
 		env["CSD_ENABLED"] = "true"
 	}
@@ -213,14 +209,14 @@ func (s *InstorageManagerServer) convertResources(res *pb.Resources) *ContainerR
 	return containerRes
 }
 
-func (s *InstorageManagerServer) getCSDEndpoint(dataPath string) (string, error) {
-	// dataPath에서 csd 뒤의 숫자 추출
+func (s *InstorageManagerServer) getCSDEndpoint(csdEndpoint []string) (string, error) {
+	// csdEndpoint에서 csd 뒤의 숫자 추출
 	var csdNum string
-	if len(dataPath) >= 4 && dataPath[:3] == "csd" {
-		csdNum = dataPath[3:4] // "csd1" -> "1"
+	if len(csdEndpoint[0]) >= 4 && csdEndpoint[0][:3] == "csd" {
+		csdNum = csdEndpoint[0][3:4] // "csd1" -> "1"
 	} else {
-		return "", fmt.Errorf("Invalid dataPath : ", dataPath)
+		return "", fmt.Errorf("Invalid CSDEndpoint : ", csdEndpoint[0])
 	}
 
-	return fmt.Sprintf("10.1.%s.2", csdNum), nil
+	return fmt.Sprintf("http://10.1.%s.2:40120/api/v1", csdNum), nil
 }

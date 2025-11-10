@@ -60,6 +60,7 @@ type JobState struct {
 	OutputPath     string
 	ErrorMessage   string
 	BatchExecution *pb.BatchExecutionStatus
+	CSDEndpoint    string
 }
 
 // BatchResult represents the result of processing a single batch

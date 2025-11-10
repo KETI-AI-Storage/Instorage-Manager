@@ -76,7 +76,8 @@ func (s *InstorageManagerServer) monitorJob(jobId string) {
 
 // getJobStatusFromContainerProcessor queries container processor for job status
 func (s *InstorageManagerServer) getJobStatusFromContainerProcessor(jobId string) (*ContainerJobStatus, error) {
-	url := fmt.Sprintf("%s/api/v1/jobs/%s/status", "s.csdEndpoint", jobId)
+	endpoint := s.jobs[jobId].CSDEndpoint
+	url := fmt.Sprintf("%s/status", endpoint)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

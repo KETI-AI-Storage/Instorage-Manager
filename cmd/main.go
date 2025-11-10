@@ -25,7 +25,7 @@ import (
 
 const (
 	DefaultGRPCPort = "40110"
-	DefaultHTTPPort = "8080"
+	DefaultHTTPPort = "40111"
 )
 
 var (
